@@ -74,22 +74,22 @@ Log file Logs/2020-5-18---16-41-36/29B0OAZEX3CEAW2V2UAQ.txt created.
 # Registering the implant...
 Implant registration for 29B0OAZEX3CEAW2V2UAQ is done.
 Links are adding to the implant...
-# list
+# **list**
 Session ID		User Name		Hostname	IP Address	Status		Link URI
 29B0OAZEX3CEAW2V2UAQ	SHEEP\dev		Sheep		172.16.121.142	connected	ws://172.16.121.1:80/ws
-# use 29B0OAZEX3CEAW2V2UAQ
+# **use 29B0OAZEX3CEAW2V2UAQ**
 Use 'back' instruction for the main menu.
-29B0OAZEX3CEAW2V2UAQ # exec whoami
+29B0OAZEX3CEAW2V2UAQ # **exec whoami**
 29B0OAZEX3CEAW2V2UAQ # Waiting for the process to complete...
 29B0OAZEX3CEAW2V2UAQ # sheep\dev
 
-29B0OAZEX3CEAW2V2UAQ # exit
+29B0OAZEX3CEAW2V2UAQ # **exit**
 # Session 29B0OAZEX3CEAW2V2UAQ is disconnected.
 #
-# list
+# **list**
 Session ID		User Name		Hostname	IP Address	Status		Link URI
 29B0OAZEX3CEAW2V2UAQ	SHEEP\dev		Sheep		172.16.121.142	disconnected	ws://172.16.121.1:80/ws
-# exit
+# **exit**
 Also use CTRL+C for stopping the implant services.
 CApplication is shutting down...
 ```
