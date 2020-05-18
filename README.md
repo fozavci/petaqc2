@@ -95,18 +95,19 @@ CApplication is shutting down...
 
 # Usage Examples
 Petaq Implant Run Arguments:
-###It runs Petaq Implants to connect to a Petaq Service using Websocket (If not configured on Configuration.cs)
+1. It runs Petaq Implants to connect to a Petaq Service using Websocket (If not configured on Configuration.cs)
     ```petaqimplant.exe ws://172.16.121.1/ws
     petaqimplant.exe wss://172.16.121.1:443/ws``` (SSL)
-###It runs Petaq Implant on TCP 8000 and wait for another implant to link it to the Petaq Service
+2. It runs Petaq Implant on TCP 8000 and wait for another implant to link it to the Petaq Service
     ```petaqimplant.exe tcp 8000```
-###It runs Petaq Implant on UDP 8000 and wait for another implant to link it to the Petaq Service
+3. It runs Petaq Implant on UDP 8000 and wait for another implant to link it to the Petaq Service
     ```petaqimplant.exe udp 8000```
-###It runs Petaq Implant on SMB Named Pipe pipename1 and wait for another implant to link it to the Petaq Service
+4. It runs Petaq Implant on SMB Named Pipe pipename1 and wait for another implant to link it to the Petaq Service
     ```petaqimplant.exe smb pipename1```
 
 Petaq Service Commands:
-```Help:
+```
+    Help:
         help
     List the Implants:
         list
