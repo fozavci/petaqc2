@@ -43,6 +43,17 @@ Lateral Movement
 
 * Cheat Sheet for the tutorial video can be found at https://github.com/fozavci/petaqc2/blob/master/CheatSheet.md
 
+# Credits and Thanks
+I admire the people below and their contributions to our security engineering world. This project has been inspired of their work out there already. Thank you all guys Please visit their pages, github projects and work out there.
+* James Forshaw - https://twitter.com/tiraniddo 
+* Casey Smith - https://twitter.com/subTee
+* Raphael Mudge - https://twitter.com/armitagehacker
+* Will Schroeder - https://twitter.com/harmj0y
+* Ryan Cobb - https://twitter.com/cobbr_io
+* Adam Chester - https://twitter.com/_xpn_
+* Daniel Duggan - https://twitter.com/_rastamouse
+* Marcello Salvati - https://twitter.com/byt3bl33d3r
+
 # Configuration
 You can tweak the following files to configure the C2 and malware. 
 * PetaqService configuration file is Properties/launchSettings.json
