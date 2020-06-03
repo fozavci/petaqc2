@@ -44,7 +44,7 @@ Lateral Movement
 * Cheat Sheet for the tutorial video can be found at https://github.com/fozavci/petaqc2/blob/master/CheatSheet.md
 
 # Credits and Thanks
-I admire the people below and their contributions to our security engineering world. This project has been inspired of their work out there already. Thank you all guys Please visit their pages, github projects and work out there.
+I admire the people below and their contributions to our security engineering world. This project has been inspired of their work out there already. Thank you all guys. So please visit their pages, github projects and work out there for better exercises and development ideas.
 * James Forshaw - https://twitter.com/tiraniddo 
 * Casey Smith - https://twitter.com/subTee
 * Raphael Mudge - https://twitter.com/armitagehacker
