@@ -38,7 +38,7 @@ Lateral Movement
 * In case of variety required; it's possible to use schtasks, sc, admin$ and powershell can be used through execthread command
 
 # Documentation
-* I prepared a tutorial video shared on YouTube. 
+* I prepared a tutorial video shared on YouTube. <br>
 [![Introduction to Petaq C2/Malware](https://img.youtube.com/vi/oRvn0ZfxInY/hqdefault.jpg)](https://youtu.be/oRvn0ZfxInY)
 
 * Cheat Sheet for the tutorial video can be found at https://github.com/fozavci/petaqc2/blob/master/CheatSheet.md
