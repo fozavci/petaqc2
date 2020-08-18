@@ -16,7 +16,9 @@ http://www.klingonwiki.net/En/Cursing
 
 # Version
 * 0.1 - 18 May 2020
-```Initial release```
+```
+Initial release
+```
 * 0.2 - 18 August 2020
 ```
 * Scenario and TTP support added
