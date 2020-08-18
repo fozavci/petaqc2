@@ -15,7 +15,7 @@ http://www.klingonwiki.net/En/Cursing
 * There are several bad programmig or technical decisions in this code which may make you highly uncomfortable. If so, please consider to not use it, submit a pull request or register a bug. If I can find some time for it and improve my programming skills, I'll make this code better in time. 
 
 # Version
-* 0.1 - 3 June 2020
+* 0.1 - 18 May 2020
 ```Initial release```
 * 0.2 - 18 August 2020
 ```
