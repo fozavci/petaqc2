@@ -14,7 +14,7 @@ http://www.klingonwiki.net/En/Cursing
 * This tool is developed to assist Purple Team exercises, not adversaries. If they use it, blame on them, not me. 
 * There are several bad programmig or technical decisions in this code which may make you highly uncomfortable. If so, please consider to not use it, submit a pull request or register a bug. If I can find some time for it and improve my programming skills, I'll make this code better in time. 
 
-# Version
+# Versions and Change Log
 * 0.1 - 18 May 2020
 ```
 Initial release
@@ -154,6 +154,12 @@ Petaq Service Commands:
         remove SessionID
     Show Routes for Linked Implants:
         route
+    Run Scenarios:
+        scenario IMPLANTID scenariofilepath
+        scenarios
+        scenarios SCENARIOID
+        scenarios SCENARIOID output
+        scenarios SCENARIOID export reportfilepath
     Exit:
         exit
         terminate
