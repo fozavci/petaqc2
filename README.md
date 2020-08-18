@@ -75,7 +75,7 @@ You can tweak the following files to configure the C2 and malware.
 # Installation
 The service is for .NET Core, so it can run on any .NET Core 2.2.* instances on Windows, Linux or Mac. To run the service, you can simply give "dotnet run" command. You may need to install a bunch of nuget packages to satisfy the requirements before compiling it.
 
-The malware needs to be compiled using .NET Framework as it has inline .NET compiler and Win P/Invoke used. To compile the malware, you can run "csc /out:malware.exe *.cs" in the petaqimplant folder.
+The malware needs to be compiled using .NET Framework as it has inline .NET compiler and Win P/Invoke used. To compile the malware, you can run "csc /r:System.Management.Automation.dll /out:malware.exe *.cs" in the petaqimplant folder.
 
 # Deployment to the Victims
 Even though it's too noisy, running the following Powershell line would load the compiled Petaq Implant as reflected assembly for testing. You can compile the Petaq Implant as above, then place it into the wwwroot folder of Petaq Service as index.html. So the url would point to the binary to load directly.
