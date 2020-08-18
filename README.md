@@ -26,7 +26,6 @@ Initial release
 * Several bugs fixed including transmission buffers
 * Powershell through .NET System Automation added
 * Commands are now supporting "file" to send the binaries/scripts through the C2 channels
-
 ```
 
 # Features
