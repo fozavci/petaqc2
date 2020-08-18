@@ -64,8 +64,8 @@ Lateral Movement
 * I prepared a tutorial video shared on YouTube. <br>
 [![Introduction to Petaq C2/Malware](https://img.youtube.com/vi/oRvn0ZfxInY/hqdefault.jpg)](https://youtu.be/oRvn0ZfxInY)
 
-* Cheat Sheet for the tutorial video can be found at https://github.com/fozavci/petaqc2/blob/master/DemoCheatSheet.md
-* Cheat Sheet for the scenarios can be found at https://github.com/fozavci/petaqc2/blob/master/TTPCheatSheet.md
+* Cheat Sheet for the tutorial video can be found at [a relative link](DemoCheatSheet.md)
+* Cheat Sheet for the scenarios can be found at  [a relative link](TTPCheatSheet.md)
 
 # Configuration
 You can tweak the following files to configure the C2 and malware. 
