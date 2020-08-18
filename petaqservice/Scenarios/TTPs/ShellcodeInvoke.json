@@ -1,0 +1,8 @@
+{
+    "name": "Invoking a shellcode",
+    "mitreid": "ShellcodeInvoke",
+    "description": "Invoking a custom shellcode given as a parameter, or a calc as demo.",
+    "instructions": [
+        "exec-sharpassembly file Scenarios/Files/ShellcodeInvoke.exe demo"
+    ]
+}

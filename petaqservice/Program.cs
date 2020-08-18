@@ -31,6 +31,10 @@ namespace PetaqService
         // Usage:              
         // implantRoutes.TryAdd("X1", "NextHop in Linked Implants");
 
+        // scenarios
+        public static ConcurrentDictionary<string, dynamic> scenarios = new ConcurrentDictionary<string, dynamic>();
+
+
         public static void Main(string[] args)
         {
             // Used for encrypted communications - AES Key and IV

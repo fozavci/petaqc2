@@ -1,0 +1,8 @@
+{
+    "name": "Data exfiltration through the C2 channel.",
+    "mitreid": "T1041",
+    "description": "File download for exfiltration demo using the C2 channel",
+    "instructions": [
+        "download c:\\windows\\system32\\ftp.exe"
+    ]
+}

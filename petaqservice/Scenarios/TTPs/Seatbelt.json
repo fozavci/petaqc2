@@ -1,0 +1,8 @@
+{
+    "name": "Situational awareness using Seatbelt",
+    "mitreid": "Seatbelt",
+    "description": "Collecting the user and system information using Seatbelt.",
+    "instructions": [
+        "exec-sharpassembly file Scenarios/Files/Seatbelt.exe BasicOSInfo"
+    ]
+}

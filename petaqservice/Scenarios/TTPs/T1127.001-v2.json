@@ -1,0 +1,8 @@
+{
+    "name": "Compiling .NET Source Code using .NET COM Compiler",
+    "mitreid": "T1127.001",
+    "description": "Compiling .NET Source Code using .NET COM Compiler for code execution and defence evasion.",
+    "instructions": [
+        "exec-sharpcode file Scenarios/Files/ShellcodeInvoke.cs demo"
+    ]
+}

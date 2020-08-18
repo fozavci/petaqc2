@@ -1,0 +1,11 @@
+{
+    "threat_actor":"Demo Threat Actor!",
+    "ttps":[
+        "T1087.001",
+        "T1087.002",
+        "T1059.001",
+        "T1127.001-v2",
+        "Seatbelt",
+        "ShellcodeInvoke"
+    ]
+}

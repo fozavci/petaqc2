@@ -10,6 +10,7 @@ namespace PetaqService
     {
         public string logFolderName;
         public string logFileName;
+        public string filesFolderName;
         public bool keepReading = true;
         public string socketId { get; private set; }
 
@@ -18,14 +19,23 @@ namespace PetaqService
             // set main session log path
             logFolderName = Path.Combine("Logs", Program.logDate);
             logFileName = Path.Combine(logFolderName, socketId + ".txt");
+
+            // set a store path for files
+            filesFolderName = Path.Combine("Files", Program.logDate, socketId);
+
             try
             {
 
-                // check and create the main session log folder 
+                // check and create the main session log and files folders
                 if (! Directory.Exists(logFolderName))
                 {
                     Directory.CreateDirectory(logFolderName);
-                    Console.WriteLine("Creating {0} folder.", logFolderName);
+                    //Console.WriteLine("Creating {0} folder.", logFolderName);
+                }
+                if (!Directory.Exists(filesFolderName))
+                {
+                    Directory.CreateDirectory(filesFolderName);
+                    //Console.WriteLine("Creating {0} folder.", filesFolderName);
                 }
             }
             catch (Exception e)
