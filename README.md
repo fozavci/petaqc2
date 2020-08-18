@@ -20,14 +20,12 @@ http://www.klingonwiki.net/En/Cursing
 Initial release
 ```
 * 0.2 - 18 August 2020
-
-
 ```
-* Scenario and TTP support added
-* File operations (upload/download) added
-* Several bugs fixed including transmission buffers
-* Powershell through .NET System Automation added
-* Commands are now supporting "file" to send the binaries/scripts through the C2 channels
+Scenario and TTP support added
+File operations (upload/download) added
+Several bugs fixed including transmission buffers
+Powershell through .NET System Automation added
+Commands are now supporting "file" to send the binaries/scripts through the C2 channels
 ```
 
 # Features
