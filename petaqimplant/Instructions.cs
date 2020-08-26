@@ -449,7 +449,8 @@ Exit:
                             string head = "using System;\npublic class Program\n {public static void Main()\n{";
                             string tail = "\n}\n}";
                             string sharpdirect = head + code + tail;
-                            Capabilities.ExecSharpCode(sharpdirect, null);
+                            string[] sharpdirect_arg = { };
+                            Capabilities.ExecSharpCode(sharpdirect, sharpdirect_arg, false);
                             break;
                         case "exit":
                             Program.exit = true;
