@@ -61,8 +61,11 @@ Lateral Movement
 * In case of variety required; it's possible to use schtasks, sc, admin$ and powershell can be used through execthread command
 
 # Documentation
-* I prepared a tutorial video shared on YouTube. <br>
-[![Introduction to Petaq C2/Malware](https://img.youtube.com/vi/oRvn0ZfxInY/hqdefault.jpg)](https://youtu.be/oRvn0ZfxInY)
+* Introduction to Purple Team Simulations using Petaq C2/Malware <br>
+[![Introduction to Petaq C2/Malware](https://img.youtube.com/vi/oRvn0ZfxInY/hqdefault.jpg)](https://youtu.be/oRvn0ZfxInY "Introduction to Purple Team Simulations using Petaq C2/Malware")
+
+* Practical Automated Adversary Simulation Using Petaq C2 <br>
+[![Practical Automated Adversary Simulation Using Petaq C2](http://img.youtube.com/vi/trkh6wRBW14/0.jpg)](http://www.youtube.com/watch?v=trkh6wRBW14 "Practical Automated Adversary Simulation Using Petaq C2")
 
 * [Cheat Sheet for the tutorial video](DemoCheatSheet.md)
 * [Cheat Sheet for the scenarios](TTPCheatSheet.md)
@@ -75,7 +78,7 @@ You can tweak the following files to configure the C2 and malware.
 # Installation
 The service is for .NET Core, so it can run on any .NET Core 2.2.* instances on Windows, Linux or Mac. To run the service, you can simply give "dotnet run" command. You may need to install a bunch of nuget packages to satisfy the requirements before compiling it.
 
-The malware needs to be compiled using .NET Framework as it has inline .NET compiler and Win P/Invoke used. To compile the malware, you can run "csc /r:System.Management.Automation.dll /out:malware.exe *.cs" in the petaqimplant folder.
+The malware needs to be compiled using .NET Framework as it has inline .NET compiler and Win P/Invoke used. To compile the malware, you can run "csc /r:System.Management.Automation.dll /out:malware.exe *.cs" in the petaqimplant folder. In case of you compile the implant on Linux or Mac, you can use Mono for compiling it using the same commands as well. 
 
 # Deployment to the Victims
 Even though it's too noisy, running the following Powershell line would load the compiled Petaq Implant as reflected assembly for testing. You can compile the Petaq Implant as above, then place it into the wwwroot folder of Petaq Service as index.html. So the url would point to the binary to load directly.
