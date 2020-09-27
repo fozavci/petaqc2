@@ -30,7 +30,7 @@ namespace PetaqImplant
         // Usage:              
         // implantRoutes.TryAdd("X1", "NextHop in Linked Implants");
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             Configuration.InitConfiguration();
 
