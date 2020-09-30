@@ -1,0 +1,8 @@
+{
+	"General": {
+		"OutputFile": "$(TargetDir)PetaqImpantMerged.exe",
+		"InputAssemblies": [
+		  "Newtonsoft.Json.dll" 
+		]
+	}
+}
